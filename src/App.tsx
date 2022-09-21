@@ -1,20 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
 
-import { useForm } from "react-hook-form";
-import { Container, DeliveryContainer, DeliveryGrid, Wrapper } from "./style";
-import TextField from "./component/TextField";
+import { useForm, FieldErrorsImpl } from "react-hook-form";
+import { Container, Wrapper } from "./style";
+
 import Back from "./component/Back";
-import PageHeader from "./component/PageHeader";
 import Stepper from "./component/Stepper";
 import Summary from "./component/Summary";
 import DeliveryStepper from "./component/DeliveryStepper";
 import PaymentStepper from "./component/PaymentStepper";
 import FinishStep from "./component/FinishStep";
-type FormValues = {
-	firstName: string;
-	// lastName: string;
-};
+import { IData } from "./model";
 
 function App() {
 	const [step, setStep] = useState("delivery");
@@ -27,8 +22,11 @@ function App() {
 		setValue,
 		clearErrors,
 		getValues,
-		// getFieldState
-	} = useForm({ mode: "onChange" });
+		reset,
+	} = useForm({
+		mode: "onChange",
+		defaultValues: JSON.parse(localStorage.getItem("savedData") || "{}"),
+	});
 
 	const handleStepper = useCallback(
 		(step: string) => {
@@ -52,8 +50,17 @@ function App() {
 						/>
 					);
 				case "finish":
-					return <FinishStep />;
-
+					localStorage.removeItem("savedData");
+					return (
+						<FinishStep
+							data={getValues() as IData}
+							handleReset={() => {
+								setStep("delivery");
+								setPass(["delivery"]);
+								reset();
+							}}
+						/>
+					);
 				default:
 					break;
 			}
@@ -61,37 +68,34 @@ function App() {
 		[step, errors, watch]
 	);
 
-	const onSubmit = (data: any) => {
-		console.log(data);
-		console.log(errors);
-		if (data.shipment && data.payment) {
-			const obj = { ...data };
-			obj.shipment = JSON.parse(data.shipment);
-			obj.payment = JSON.parse(data.payment);
-			console.log(obj);
-		}
-		if (step == "delivery") {
-			setStep("payment");
-			setPass((prev) => [...prev, "payment"]);
-		}
-		if (step == "payment") {
-			setStep("finish");
-			setPass((prev) => [...prev, "finish"]);
-		}
-	};
-	const handleBack = () => {
+	const onSubmit = useCallback(
+		(data: any) => {
+			if (data.shipment && data.payment) {
+				const obj = { ...data };
+				obj.shipment = JSON.parse(data.shipment);
+				obj.payment = JSON.parse(data.payment);
+			}
+			if (step == "delivery") {
+				setStep("payment");
+				setPass((prev) => [...prev, "payment"]);
+			}
+			if (step == "payment") {
+				setStep("finish");
+				setPass((prev) => [...prev, "finish"]);
+			}
+			localStorage.setItem("savedData", JSON.stringify(data));
+		},
+		[pass, step]
+	);
+
+	const handleBack = useCallback(() => {
 		if (step == "delivery") return;
 		const tmp = pass.filter((item) => item != step);
-		// console.log(tmp);
+
 		setPass(tmp);
 		setStep(tmp[tmp.length - 1]);
-	};
-	// useEffect(() => {
-	// 	if (watch("shipper")) setValue("shipper", JSON.parse(watch("shipper")));
-	// 	if (watch("payment")) setValue("payment", JSON.parse(watch("payment")));
-	// }, [watch("shipper"), watch("payment")]);
-	// console.log(getValues());
-	// console.log(getFieldState());
+	}, [pass, step]);
+
 	return (
 		<div className="App">
 			<Wrapper>
@@ -106,9 +110,9 @@ function App() {
 						</div>
 
 						<Summary
+							error={errors as FieldErrorsImpl}
 							step={step}
-							handler={() => {}}
-							data={getValues()}
+							data={getValues() as IData}
 						/>
 					</Container>
 				</form>

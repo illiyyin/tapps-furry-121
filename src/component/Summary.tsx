@@ -1,30 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { IData, IShipingDict } from "../model";
+import { useEffect, useState } from "react";
+import { IData,  ISummary } from "../model";
 import { SubmitButton, SummaryWrapper } from "../style";
-import { formatNumber } from "../utils";
+import { dictShipping, formatNumber } from "../utils";
 
-const dictShipping: IShipingDict = {
-	"GO-SEND": "today",
-	"Personal Courier": "1 day",
-	JNE: "2 days",
-};
 
-export default function Summary({ step, handler, data }) {
-	console.log(step);
+
+export default function Summary({ step, error, data }: ISummary) {
 	const [parsedData, setParsedData] = useState({} as IData);
 	const cost = 500000;
 	const dropShipFee = 5900;
-	// const obj = { ...data };
 	useEffect(() => {
-		// console.log(data)
-		const obj = { ...data };
-		if (data.shipment) {
-			obj.shipment = JSON.parse(data.shipment);
+		if (data) {
+			const obj = { ...data };
+			if (typeof data?.shipment == "string") {
+				obj.shipment = JSON.parse(data.shipment);
+			}
+			if (typeof data?.payment == "string") {
+				obj.payment = JSON.parse(data.payment);
+			}
+			setParsedData(obj);
 		}
-		if (data.payment) {
-			obj.payment = JSON.parse(data.payment);
-		}
-		setParsedData(obj);
 	}, [data]);
 
 	const handleTotal = () => {
@@ -33,11 +28,22 @@ export default function Summary({ step, handler, data }) {
 		if (parsedData.dropshipper_name) {
 			total += dropShipFee;
 		}
-		if (parsedData.shipment) {
+		if (parsedData.shipment?.value) {
 			total += parsedData.shipment.value;
 		}
 
 		return total;
+	};
+	const handleButtonText = () => {
+		if (step == "delivery") return "Continue to Payment";
+		if (step == "payment" && parsedData.payment)
+			return `Pay with ${parsedData.payment?.label}`;
+		return "Pay";
+	};
+
+	const isDisabled = () => {
+		if (Object.keys(error).length == 0) return false;
+		return true;
 	};
 	return (
 		<SummaryWrapper>
@@ -85,7 +91,8 @@ export default function Summary({ step, handler, data }) {
 							<span>{parsedData.shipment?.label}</span> shipment
 						</p>
 						<p className="cost-price">
-							{formatNumber(parsedData.shipment?.value)}
+							{parsedData.shipment?.value &&
+								formatNumber(parsedData.shipment?.value)}
 						</p>
 					</div>
 				)}
@@ -96,11 +103,8 @@ export default function Summary({ step, handler, data }) {
 					</p>
 				</div>
 				{step !== "finish" && (
-					<SubmitButton type="submit">
-						Pay{" "}
-						{parsedData.payment && (
-							<span>with {parsedData.payment?.label}</span>
-						)}
+					<SubmitButton type="submit" disabled={isDisabled()}>
+						{handleButtonText()}
 					</SubmitButton>
 				)}
 			</div>

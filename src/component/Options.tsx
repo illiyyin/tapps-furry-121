@@ -1,17 +1,22 @@
 import React from "react";
 import { CheckboxItem, CheckboxWrapper } from "../style";
 import IconCheck from "../assets/check.svg";
+import { IOptions } from "../model";
+import { formatNumber } from "../utils";
 
-export default function Checkbox({ register, watch, options, fieldName }) {
+export default function Options({
+	register,
+	watch,
+	options,
+	fieldName,
+}: IOptions) {
 	const parsedValue = JSON.parse(watch(fieldName) || "{}");
-	console.log(parsedValue);
 	return (
 		<CheckboxWrapper>
 			{options.map((item) => (
 				<CheckboxItem className="container">
 					<input
 						type="radio"
-						name="radio"
 						{...register}
 						value={`{"label":"${item.label}","value":${
 							item.value || null
@@ -21,9 +26,7 @@ export default function Checkbox({ register, watch, options, fieldName }) {
 					<p className="header">{item.label}</p>
 					{item.value && (
 						<p className="value">
-							{new Intl.NumberFormat().format(
-								parseInt(item.value)
-							)}
+							{formatNumber(item.value)}
 							{item.label == "e-Wallet" && " left"}
 						</p>
 					)}

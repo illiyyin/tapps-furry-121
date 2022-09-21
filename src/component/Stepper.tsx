@@ -1,6 +1,7 @@
 import React from "react";
 import { StepperItem, StepperWrapper } from "../style";
 import IconChevron from "../assets/chevron.svg";
+import { IStepper } from "../model";
 
 const list = [
 	{
@@ -17,13 +18,13 @@ const list = [
 	},
 ];
 
-export default function Stepper({ pass }) {
+export default function Stepper({ pass }:IStepper) {
 	return (
 		<StepperWrapper>
 			{list.map((item, index) => (
 				<StepperItem
-					active={
-						pass.includes(item.label.toLowerCase()) ? true : false
+					activeItem={
+						pass?.includes(item.label.toLowerCase()) ? true : false
 					}
 				>
 					<div className="number">

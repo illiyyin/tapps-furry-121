@@ -3,19 +3,8 @@ import { Alert, Input, InputWrapper, LabelInput } from "../style";
 import { useForm, UseFormRegister, FieldValues } from "react-hook-form";
 import IconCross from "../assets/cross.svg";
 import IconCheck from "../assets/check.svg";
+import { InputInterface } from "../model";
 
-interface InputInterface {
-	// register: UseFormRegister<FieldValues>;
-	register: any;
-	fieldName: string;
-	error: any;
-	watcher: any;
-	type?: HTMLInputTypeAttribute;
-	textarea?: Boolean;
-	label: string;
-	disabled?: Boolean;
-	className?:string
-}
 export default function TextField({
 	register,
 	fieldName,
@@ -25,7 +14,7 @@ export default function TextField({
 	textarea,
 	label,
 	disabled,
-	className
+	className,
 }: InputInterface) {
 	return (
 		<InputWrapper>
@@ -49,11 +38,11 @@ export default function TextField({
 					</p>
 				</>
 			) : (
-					<Input
-						className={className}
+				<Input
+				{...register}
+					className={className}
 					disabled={disabled}
 					type={type}
-					{...register}
 					placeholder={label}
 					error={error[fieldName]}
 					data={watcher}
@@ -64,7 +53,6 @@ export default function TextField({
 			) : watcher ? (
 				<Alert src={IconCheck} />
 			) : null}
-			{/* {error[fieldName] && watcher && <Error src={IconCross} />} */}
 		</InputWrapper>
 	);
 }

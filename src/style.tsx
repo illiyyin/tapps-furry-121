@@ -1,19 +1,29 @@
 import styled from "styled-components";
-interface InterfaceError {
-	error: any;
-	data: any;
-}
+import { IStepper, InterfaceError } from "./model";
+
+const handleErrorInput = ({ error, data }: InterfaceError) => {
+	if (data && !error) return "#1BD97B";
+	if (error) return "#FF8A00";
+	return "#CCCCCC";
+};
+
 export const Wrapper = styled.div`
+	margin-top: 2rem;
 	background-color: white;
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-end;
-	width: 1060px;
-	height: 520px;
+	max-width: 1060px;
+	min-height: 520px;
 	border-radius: 4px;
-	padding-top: 30px;
-	padding-left: 40px;
-	padding-right: 0;
+	padding: 0 30px;
+	padding-top: 70px;
+
+	@media (min-width: 1100px) {
+		padding-top: 30px;
+		padding-left: 40px;
+		padding-right: 0;
+	}
 	z-index: 10;
 	box-shadow: 2px 10px 20px 0 rgba(255, 138, 0, 0.1);
 	& > form {
@@ -25,36 +35,56 @@ export const BackWrapper = styled.div`
 	user-select: none;
 	cursor: pointer;
 	display: flex;
+	& > p {
+		margin: 8px 0;
+	}
 	& > img {
 		margin-right: 16px;
 	}
 `;
 export const Container = styled.div`
 	display: flex;
+	flex-direction: column;
 	justify-content: space-between;
-	/* align-items: flex-end;
-	justify-content: flex-end; */
 	min-height: 500px;
 	width: 100%;
+	max-width: 500px;
+	margin: auto;
+	@media (min-width: 1100px) {
+		flex-direction: row;
+		margin: 0;
+		max-width: 100%;
+	}
 `;
 export const FinishContainer = styled.div`
 	display: flex;
 	align-items: center;
-	width: 760px;
+	@media (min-width: 1100px) {
+		width: 760px;
+		
+	}
 	height: 100%;
 	& > .content {
 		margin: 0 auto;
 		text-align: left;
-		/* display: flex;
-justify-items: flex-start; */
-		/* width: 100%; */
-		/* flex-direction: column;
-		align-items: center; */
+		.order-id {
+			margin: 0;
+		}
+		.order-action {
+			margin: 0;
+			margin-bottom: 60px;
+		}
 	}
 `;
 export const PaymentContainer = styled.div`
 	& > .payment-item {
 		margin-bottom: 60px;
+		.error {
+			font-size: 12px;
+			margin-top: 0;
+			text-align: left;
+			color: red;
+		}
 	}
 `;
 export const DeliveryContainer = styled.div`
@@ -63,13 +93,23 @@ export const DeliveryContainer = styled.div`
 	flex-direction: column;
 	& > .header {
 		display: flex;
-		align-items: center;
-		width: 100%;
-		justify-content: space-between;
+		flex-direction: column;
+		width: fit-content;
+		margin-bottom: 24px;
+		@media (min-width: 1100px) {
+			width: 100%;
+			margin-bottom: 0;
+			justify-content: space-between;
+			align-items: center;
+			flex-direction: row;
+		}
 
 		.checkbox {
 			margin-right: 32px;
+			text-align: left;
 			padding-left: 32px;
+			@media (min-width: 1100px) {
+			}
 			position: relative;
 			user-select: none;
 			cursor: pointer;
@@ -112,7 +152,11 @@ export const DeliveryContainer = styled.div`
 `;
 export const DeliveryGrid = styled.div`
 	display: grid;
-	grid-template-columns: 400px 300px;
+	justify-content: left;
+	grid-template-columns: 1fr;
+	@media (min-width: 1100px) {
+		grid-template-columns: 400px 300px;
+	}
 	gap: 10px 30px;
 `;
 export const PaymentGrid = styled.div`
@@ -121,13 +165,16 @@ export const PaymentGrid = styled.div`
 `;
 export const CheckboxWrapper = styled.div`
 	display: flex;
+	flex-direction: column;
+	@media (min-width: 1100px) {
+		flex-direction: row;
+	}
 	gap: 10px;
 `;
 export const CheckboxItem = styled.label`
 	display: block;
 	position: relative;
 	padding: 21px 0;
-	/* margin-bottom: 12px; */
 	width: 180px;
 	cursor: pointer;
 	font-size: 22px;
@@ -199,16 +246,18 @@ export const CheckboxItem = styled.label`
 `;
 export const SummaryWrapper = styled.div`
 	width: 100%;
-	max-width: 300px;
+	max-width: none;
+	@media (min-width: 1100px) {
+		max-width: 300px;
+	}
+
 	min-height: 100%;
 	display: flex;
 	justify-content: space-between;
 	flex-direction: column;
 	text-align: left;
 	border-left: 1px solid #ff8a00;
-	/* padding:0  20px; */
 	margin: 20px 0;
-	/* margin-left: 30px;  */
 	& > .header {
 		padding: 0 20px;
 		hr {
@@ -249,7 +298,6 @@ export const SummaryWrapper = styled.div`
 				font-weight: 700;
 			}
 			.cost-label {
-				/* font-weight: 700; */
 				font-size: 14px;
 				color: rgba(0, 0, 0, 0.6);
 				span {
@@ -262,12 +310,6 @@ export const SummaryWrapper = styled.div`
 				font-size: 24px;
 				color: #ff8a00;
 			}
-			/* .total-label {
-				font-weight: 700;
-
-				font-size: 24px;
-				color: #ff8a00;
-			} */
 		}
 	}
 `;
@@ -282,15 +324,15 @@ export const StepperWrapper = styled.div`
 	padding: 20px 38px;
 	border-radius: 999px;
 `;
-export const StepperItem = styled.div`
+export const StepperItem = styled.div<IStepper>`
 	display: flex;
 	align-items: center;
 	& > .label {
 		margin-left: 10px;
 	}
 	& > .number {
-		background-color: ${({ active }) =>
-			active ? "rgba(255, 138, 0,1)" : "rgba(255, 138, 0,0.2)"};
+		background-color: ${({ activeItem }) =>
+			activeItem ? "rgba(255, 138, 0,1)" : "rgba(255, 138, 0,0.2)"};
 		height: 30px;
 		width: 30px;
 		border-radius: 99px;
@@ -332,34 +374,18 @@ export const Input = styled.input<InterfaceError>`
 		max-width: calc(300px - 60px);
 	}
 	width: 100%;
-	/* max-width: 200px; */
-	/* border:  #cccccc; */
 	font-family: "Inter", sans-serif;
-	/* padding:25px 50px 75px 100px; */
 	padding: 30px 44px 10px 16px;
-
-	/* margin-right: 40px; */
 	line-height: 20px;
 	font-size: initial;
 	border: 0;
-	outline: 1px solid
-		${({ error, data }) => {
-			if (data && !error) return "#1BD97B";
-			if (error) return "#FF8A00";
-			return "#CCCCCC";
-		}};
+	outline: 1px solid ${({ error, data }) => handleErrorInput({ error, data })};
 	:focus {
 		outline: 1px solid
-			${({ error, data }) => {
-				if (data && !error) return "#1BD97B";
-				if (error) return "#FF8A00";
-				return "#000";
-			}};
-		/* outline: 0; */
+			${({ error, data }) => handleErrorInput({ error, data })};
 	}
 
 	:placeholder-shown {
-		/* padding: 20px 16px 20px; */
 		padding: 20px 44px 20px 16px;
 	}
 `;
@@ -375,21 +401,27 @@ export const LabelInput = styled.p<InterfaceError>`
 		if (error) return "#FF8A00";
 		if (data && !error) return "#1BD97B";
 		return "#000";
-		// data ? (error ? "#FF8A00" : "#1BD97B") : "#000"
 	}};
 `;
 export const InputWrapper = styled.div`
+	justify-self: left;
+	text-align: left;
 	position: relative;
 	width: 100%;
 	.dropship {
-		max-width: 300px;
+		max-width: 400px;
+		@media (min-width: 1100px) {
+			max-width: 300px;
+		}
 	}
 	& > input.dropship {
-		max-width: calc(300px - 60px);
+		max-width: calc(400px - 60px);
+		@media (min-width: 1100px) {
+			max-width: calc(300px - 60px);
+		}
 	}
 	max-width: 400px;
 	min-height: 60px;
-	/* margin-right: 16px; */
 	& > .field-length {
 		position: absolute;
 		margin: 0;
@@ -407,7 +439,7 @@ export const Alert = styled.img`
 `;
 
 export const SubmitButton = styled.button`
-margin-top: 18px;
+	margin-top: 18px;
 	background-color: #ff8a00;
 	width: 100%;
 	border: none;
@@ -416,4 +448,7 @@ margin-top: 18px;
 	font-size: 18px;
 	font-weight: 500;
 	cursor: pointer;
+	:disabled {
+		background-color: rgba(0, 0, 0, 0.6);
+	}
 `;
