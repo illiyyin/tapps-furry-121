@@ -17,16 +17,22 @@ const list = [
 	},
 ];
 
-export default function Stepper() {
+export default function Stepper({ pass }) {
 	return (
 		<StepperWrapper>
 			{list.map((item, index) => (
-				<StepperItem>
+				<StepperItem
+					active={
+						pass.includes(item.label.toLowerCase()) ? true : false
+					}
+				>
 					<div className="number">
 						<p>{item.id}</p>
 					</div>
 					<div className="label">{item.label}</div>
-					{index !== list.length - 1 && <img src={IconChevron} className="chevron-icon"/>}
+					{index !== list.length - 1 && (
+						<img src={IconChevron} className="chevron-icon" />
+					)}
 				</StepperItem>
 			))}
 		</StepperWrapper>

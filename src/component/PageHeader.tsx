@@ -1,6 +1,6 @@
 import React from "react";
 import { Header } from "../style";
 
-export default function PageHeader() {
-	return <Header>Delivery details</Header>;
+export default function PageHeader({label}) {
+	return <Header>{label}</Header>;
 }
